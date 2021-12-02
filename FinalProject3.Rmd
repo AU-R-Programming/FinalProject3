@@ -1,0 +1,52 @@
+---
+title: "Final Project"
+author: "Colin Clifton, Alan Galloway, John M. Musah"
+date: "12/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Final Project
+
+```{r beta_hat_function}
+estimate_beta <- function(response, explanatory, beta_zero) {
+  y <- as.vector(response)
+  X <- as.matrix(explanatory)
+  
+  beta <- t(y - X%*%beta_zero)%*%(y - X%*%beta_zero)
+  return(beta)
+}
+
+```
+
+
+
+```{r opt_regression_function}
+optim_lin_reg <- function(response, explanatory) {
+  
+  y <- as.vector(response)
+  X <- as.matrix(explanatory)
+  
+  n <- length(y)
+  
+  X <- cbind(rep(1, n), X)
+  p <- dim(X)[2]
+  df <- n - p
+  
+  beta_zero <- vector()
+  beta_zero <- append(beta_zero, 0)
+  for (i in 2:p) {
+    beta_zero <- append(beta_zero, (cov(y,X[,i])/var(X[,i])))
+  }
+  
+  beta_hat <- optim(par = beta_zero, fn = estimate_beta, response = y,
+                    explanatory = X, method = "BFGS")
+  
+  
+  
+  return(beta_hat)
+}
+```
